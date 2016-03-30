@@ -1,7 +1,7 @@
 {
-	"name": "FMFRC522",
-	"author": "Paul Kourany, forked by Ren Simmons",
-	"version": "2.0.2",
-	"license": "Unknown",
-	"description": "MFRC522 RFID library for Particle devices"
+	"name": "TrashCanBot",
+	"author": "Ren Simmons",
+	"version": "0.1.9",
+	"license": "MIT",
+	"description": "Particle Photon RFID Presence Detection with SMS"
 }
