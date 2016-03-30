@@ -70,7 +70,7 @@ void loop() {
     if (!mfrc522.PICC_IsNewCardPresent()) {
         if (mfrc522.PICC_IsNewCardPresent()) { // Check again hack
             digitalWrite(D7, HIGH);
-            if (hour > 8) {
+            if (hour > 20) {
                 // If less than time interval
                 if (lastText > 0 && (currentEpoch - lastText) < textInterval) {
                   return;
