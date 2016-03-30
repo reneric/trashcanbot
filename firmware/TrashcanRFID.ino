@@ -67,20 +67,18 @@ void loop() {
         return;
     }
 
-    if (!mfrc522.PICC_IsNewCardPresent()) {
-        if (mfrc522.PICC_IsNewCardPresent()) { // Check again hack
-            digitalWrite(D7, HIGH);
-            if (hour > 20) {
-                // If less than time interval
-                if (lastText > 0 && (currentEpoch - lastText) < textInterval) {
-                  return;
-                }
-
-                lastText = currentEpoch;
-                Particle.publish("twilio", "Bring the trash to the road!");
-                Serial.println("Bring the trash to the road!");
+    if (cardIsPresent()) {
+        digitalWrite(D7, HIGH);
+        if (hour > 12) {
+            // If less than time interval
+            if (lastText > 0 && (currentEpoch - lastText) < textInterval) {
                 return;
             }
+
+            lastText = currentEpoch;
+            Particle.publish("twilio", "Bring the trash to the road!");
+            Serial.println("Bring the trash to the road!");
+            return;
         }
     }
 
@@ -90,6 +88,19 @@ void loop() {
         return;
     }
 
+    printRfid();
+}
+
+boolean cardIsPresent() {
+    if (!mfrc522.PICC_IsNewCardPresent()) {
+        if (mfrc522.PICC_IsNewCardPresent()) { // Check again hack
+            return true;
+        }
+    }
+    return false;
+}
+
+void printRfid() {
     // Dump UID
     String rfid = "";
     for (byte i = 0; i < mfrc522.uid.size; i++) {
@@ -100,14 +111,5 @@ void loop() {
     rfid.trim();
     rfid.toUpperCase();
 
-    // Prevent multiple scans
-    // if(rfid==lastRfid)
-    //     return;
-
-    lastRfid = rfid;
-
-    // Particle.publish("slackrfid", rfid);
     Serial.println("RDID: " + rfid);
-    delay(1000);
-
 }
