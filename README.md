@@ -8,8 +8,8 @@ I am currently using this to detect my trash can in my garage. The bot is connec
 
 #### To flash the firmware from the Particle CLI:
 
-  ``` bash
-  particle flash DEVICE_ID firmware
-  ```
+``` bash
+particle flash DEVICE_ID firmware
+```
 
 ![alt text](http://i.imgur.com/DypbCyD.png "SMS Screenshot Example")
