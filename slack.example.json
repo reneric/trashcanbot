@@ -1,0 +1,12 @@
+{
+  "eventName": "slackrfid",
+  "url": "https://hooks.slack.com/services/YOUR_SLACK_WEBHOOK_URL",
+  "deviceid": "PARTICLE_DEVICE_ID",
+  "requestType": "POST",
+  "json": {
+    "channel": "#SLACK_CHANNEL",
+    "username": "SLACK_USERNAME",
+    "text": "{{SPARK_EVENT_VALUE}}"
+  },
+  "mydevices": "true"
+}

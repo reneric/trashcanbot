@@ -1,0 +1,15 @@
+{
+    "eventName": "twilio",
+    "url": "https://api.twilio.com/2010-04-01/Accounts/TWILIO_USERNAME/Messages",
+    "requestType": "POST",
+    "auth": {
+        "username": "TWILIO_USERNAME",
+        "password": "TWILIO_PASSOWRD"
+    },
+    "form": {
+        "From" : "TWILIO_PHONE_NUMBER",
+        "To" : "YOUR_PHONE_NUMBER",
+        "Body" : "{{SPARK_EVENT_VALUE}}"
+    },
+    "mydevices": true
+}
