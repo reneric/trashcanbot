@@ -6,7 +6,7 @@ I am currently using this to detect my trash can in my garage. The bot is connec
 
 *Note: I was unable to get this ported into the Particle IDE and therefore this firmware must be loaded from the Particle CLI*
 
-### To flash the firmware from the Particle CLI:
+#### To flash the firmware from the Particle CLI:
 
   ``` bash
   particle flash DEVICE_ID firmware
