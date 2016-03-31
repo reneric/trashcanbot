@@ -25,9 +25,13 @@ unsigned long lastTime = 0UL;
 String day;
 String SUNDAY = "Sunday";
 String WEDNESDAY = "Wednesday";
-byte hour;
+unsigned hour;
 
 boolean trashDay = false;
+
+// Cloud variables and functions
+int present = 0;
+int sendAlert(String command);
 
 // Setup RFID Reader
 #define SS_PIN D0
@@ -51,6 +55,8 @@ void setup() {
     // Startup communication
     Particle.publish("slackrfid", "Trash can RFID bot ready...");
     Particle.publish("twilio", "Trash can RFID bot ready...");
+    Particle.variable("present", present);
+    Particle.function("alert", sendAlert);
     Serial.println("Trash can RFID bot ready...");
 }
 
@@ -61,13 +67,13 @@ void loop() {
     hour = rtc.hour(currentTime);
     trashDay = day == SUNDAY || day == WEDNESDAY;
     currentEpoch = rtc.nowEpoch();
-
+    present = cardPresent();
     // Check if it is trash day
     if (!trashDay) {
         return;
     }
 
-    if (cardIsPresent()) {
+    if (cardPresent()) {
         digitalWrite(D7, HIGH);
         if (hour > 12) {
             // If less than time interval
@@ -76,8 +82,7 @@ void loop() {
             }
 
             lastText = currentEpoch;
-            Particle.publish("twilio", "Bring the trash to the road!");
-            Serial.println("Bring the trash to the road!");
+            sendAlert("all");
             return;
         }
     }
@@ -91,7 +96,13 @@ void loop() {
     printRfid();
 }
 
-boolean cardIsPresent() {
+int sendAlert(String command) {
+    Particle.publish("twilio", "Bring the trash to the road!");
+    Serial.println("Bring the trash to the road!");
+    return 1;
+}
+
+boolean cardPresent() {
     if (!mfrc522.PICC_IsNewCardPresent()) {
         if (mfrc522.PICC_IsNewCardPresent()) { // Check again hack
             return true;
