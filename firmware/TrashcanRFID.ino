@@ -32,6 +32,7 @@ boolean trashDay = false;
 // Cloud variables and functions
 int present = 0;
 int sendAlert(String command);
+int sendStatus(String command);
 
 // Setup RFID Reader
 #define SS_PIN D0
@@ -57,6 +58,7 @@ void setup() {
     Particle.publish("twilio", "Trash can RFID bot ready...");
     Particle.variable("present", present);
     Particle.function("alert", sendAlert);
+    Particle.function("status", sendStatus);
     Serial.println("Trash can RFID bot ready...");
 }
 
@@ -97,9 +99,85 @@ void loop() {
 }
 
 int sendAlert(String command) {
-    Particle.publish("twilio", "Bring the trash to the road!");
-    Serial.println("Bring the trash to the road!");
+    sendMessage("Bring the trash to the road!");
     return 1;
+}
+
+int sendStatus(String command) {
+    Serial.println("SMS received.");
+    // switch (command) {
+    //   case 1:
+    // }
+    if (command.toLowerCase().indexOf("where are you") >= 0) {
+        sendLocation();
+    } else if (command.toLowerCase().indexOf("reboot") >= 0) {
+        sendMessage("Sure. Rebooting now.");
+        delay(3000);
+        System.reset();
+    } else if (command.toLowerCase().indexOf("wifi name") >= 0) {
+        sendMessage(WiFi.SSID());
+    } else if (command.toLowerCase().indexOf("wifi strength") >= 0) {
+        sendWifiStrength();
+    } else {
+        commandUnknown();
+    }
+    // Particle.publish("twilio", message);
+    // Serial.println(command);
+    return 1;
+}
+
+void sendWifiStrength() {
+    Serial.println("Getting wifi strength");
+    int strength = wifiStrengthMap();
+    String actualStrength = String(WiFi.RSSI());
+    String str = "";
+    switch (strength) {
+        case 0:
+            str = "Weak (" + actualStrength + ")";
+            break;
+        case 1:
+            str = "Medium (" + actualStrength + ")";
+            break;
+        case 2:
+            str = "Strong (" + actualStrength + ")";
+            break;
+        case 3:
+            str = "Very strong (" + actualStrength + ")";
+            break;
+        default:
+            break;
+    }
+    sendMessage(str);
+    return;
+}
+
+int wifiStrengthMap() {
+    int strength = abs(WiFi.RSSI());
+    if (strength>95) return 0;
+    if (strength<=95 && strength > 63) return 1;
+    if (strength<=63 && strength > 31) return 2;
+    if (strength<=31) return 3;
+    return 0;
+}
+
+void sendMessage(String message) {
+    Particle.publish("twilio", message);
+    Serial.println(message);
+}
+
+void commandUnknown() {
+    sendMessage("Not sure what you mean \U0001F61E");
+}
+
+void sendLocation() {
+    String message = "";
+    present = cardPresent();
+    if (present) {
+        message = "In the garage.";
+    } else {
+        message = "At the road.";
+    }
+    sendMessage(message);
 }
 
 boolean cardPresent() {
