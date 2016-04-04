@@ -71,13 +71,16 @@ void loop() {
     currentEpoch = rtc.nowEpoch();
     present = cardPresent();
     // Check if it is trash day
-    if (!trashDay) {
-        return;
-    }
+
 
     if (cardPresent()) {
         digitalWrite(D7, HIGH);
-        if (hour > 12) {
+
+        if (!trashDay) {
+            return;
+        }
+
+        if (hour > 8) {
             // If less than time interval
             if (lastText > 0 && (currentEpoch - lastText) < textInterval) {
                 return;
