@@ -70,17 +70,17 @@ void loop() {
     trashDay = day == SUNDAY || day == WEDNESDAY;
     currentEpoch = rtc.nowEpoch();
     present = cardPresent();
-    // Check if it is trash day
-
 
     if (cardPresent()) {
         digitalWrite(D7, HIGH);
 
+        // Check if it is trash day
         if (!trashDay) {
             return;
         }
 
-        if (hour > 8) {
+        // If after 9:00pm
+        if (hour > 20) {
             // If less than time interval
             if (lastText > 0 && (currentEpoch - lastText) < textInterval) {
                 return;
@@ -108,9 +108,6 @@ int sendAlert(String command) {
 
 int sendStatus(String command) {
     Serial.println("SMS received.");
-    // switch (command) {
-    //   case 1:
-    // }
     if (command.toLowerCase().indexOf("where are you") >= 0) {
         sendLocation();
     } else if (command.toLowerCase().indexOf("reboot") >= 0) {
@@ -124,8 +121,6 @@ int sendStatus(String command) {
     } else {
         commandUnknown();
     }
-    // Particle.publish("twilio", message);
-    // Serial.println(command);
     return 1;
 }
 
