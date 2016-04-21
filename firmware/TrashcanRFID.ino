@@ -25,9 +25,14 @@ unsigned long lastTime = 0UL;
 String day;
 String SUNDAY = "Sunday";
 String WEDNESDAY = "Wednesday";
+String MONDAY = "Monday";
+String THURSDAY = "Thursday";
 unsigned hour;
 
 boolean trashDay = false;
+boolean trashDayEvening = false;
+boolean trashPickupDay = false;
+boolean trashPickupDayMorning = false;
 
 // Cloud variables and functions
 int present = 0;
@@ -68,6 +73,9 @@ void loop() {
     day = rtc.dayOfWeekString(currentTime);
     hour = rtc.hour(currentTime);
     trashDay = day == SUNDAY || day == WEDNESDAY;
+    trashPickupDay = day == MONDAY || day == THURSDAY;
+    trashDayEvening = trashDay && hour > 19;
+    trashPickupDayMorning = trashPickupDay && hour < 5;
     currentEpoch = rtc.nowEpoch();
     present = cardPresent();
 
@@ -75,21 +83,18 @@ void loop() {
         digitalWrite(D7, HIGH);
 
         // Check if it is trash day
-        if (!trashDay) {
+        if (!trashDayEvening && !trashPickupDayMorning) {
             return;
         }
 
-        // If after 9:00pm
-        if (hour > 20) {
-            // If less than time interval
-            if (lastText > 0 && (currentEpoch - lastText) < textInterval) {
-                return;
-            }
-
-            lastText = currentEpoch;
-            sendAlert("all");
+        // If less than time interval
+        if (lastText > 0 && (currentEpoch - lastText) < textInterval) {
             return;
         }
+
+        lastText = currentEpoch;
+        sendAlert("all");
+        return;
     }
 
     // Select one of the cards
